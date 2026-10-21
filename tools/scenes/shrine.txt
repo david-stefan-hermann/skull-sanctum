@@ -1,0 +1,27 @@
+# The suggested shrine facing south: altar 0,-60,0, middle of the middle row 1,-60,0, back row z=-1, floor y=-61.
+time set noon
+weather clear
+forceload add -16 -16 16 16
+fill -8 -60 -8 8 -50 8 minecraft:air
+fill -8 -61 -8 8 -61 8 minecraft:grass_block
+kill @e[type=minecraft:item]
+setblock 0 -61 -1 minecraft:polished_blackstone_bricks
+setblock 1 -61 -1 minecraft:cracked_polished_blackstone_bricks
+setblock 2 -61 -1 minecraft:polished_blackstone_bricks
+setblock 0 -61 0 minecraft:polished_blackstone_bricks
+setblock 1 -61 0 minecraft:cracked_polished_blackstone_bricks
+setblock 2 -61 0 minecraft:gilded_blackstone
+setblock 0 -61 1 minecraft:cracked_polished_blackstone_bricks
+setblock 1 -61 1 minecraft:gilded_blackstone
+setblock 2 -61 1 minecraft:polished_blackstone_bricks
+setblock 0 -60 -1 minecraft:gilded_blackstone
+setblock 1 -60 -1 minecraft:cauldron
+setblock 2 -60 -1 minecraft:polished_blackstone_bricks
+setblock 1 -60 0 minecraft:wither_skeleton_skull[rotation=8]
+setblock 2 -60 0 minecraft:enchanting_table
+setblock 0 -59 -1 minecraft:polished_blackstone_brick_wall
+setblock 2 -59 -1 minecraft:polished_blackstone_brick_wall
+setblock 0 -58 -1 minecraft:polished_blackstone_brick_slab[type=bottom]
+setblock 2 -58 -1 minecraft:polished_blackstone_brick_slab[type=bottom]
+setblock 1 -58 -1 minecraft:polished_blackstone_brick_stairs[facing=north,half=top]
+setblock 0 -60 0 skullsanctum:sacrificial_altar[facing=south]

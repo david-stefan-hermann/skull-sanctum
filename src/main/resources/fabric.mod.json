@@ -1,0 +1,34 @@
+{
+  "schemaVersion": 1,
+  "id": "skullsanctum",
+  "version": "${version}",
+  "name": "Skull Sanctum",
+  "description": "Sacrifice items for souls at a sanctum of your own and buy any of 86,000 heads at its Head Atlas.",
+  "authors": [
+    "BaconCakeFactory"
+  ],
+  "contact": {
+    "sources": "https://github.com/david-stefan-hermann/skull-sanctum"
+  },
+  "license": "MIT",
+  "icon": "assets/skullsanctum/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "skullsanctum.SkullSanctum"
+    ],
+    "client": [
+      "skullsanctum.client.SkullSanctumClient"
+    ]
+  },
+  "mixins": [
+    "skullsanctum.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "fabric-api": "*",
+    "bcfguidebooklib": ">=1.0.0",
+    "minecraft": "~26.2",
+    "java": ">=25"
+  }
+}

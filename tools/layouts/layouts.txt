@@ -1,0 +1,45 @@
+time set noon
+weather clear
+forceload add -10 -20 60 20
+fill -10 -60 -20 60 -50 20 minecraft:air
+fill -10 -61 -20 60 -61 20 minecraft:grass_block
+fill 0 -61 0 2 -61 2 minecraft:polished_blackstone_bricks
+setblock 0 -60 0 minecraft:polished_blackstone_wall
+setblock 0 -59 0 minecraft:wither_skeleton_skull[rotation=8]
+setblock 2 -60 0 minecraft:polished_blackstone_wall
+setblock 2 -59 0 minecraft:wither_skeleton_skull[rotation=8]
+setblock 1 -60 0 minecraft:soul_lantern
+setblock 0 -60 1 minecraft:cauldron
+setblock 1 -60 1 minecraft:respawn_anchor
+setblock 2 -60 1 minecraft:lectern[facing=south]
+setblock 3 -59 4 minecraft:barrier
+setblock 12 -60 0 minecraft:polished_blackstone_wall
+setblock 12 -59 0 minecraft:wither_skeleton_skull[rotation=8]
+setblock 14 -60 0 minecraft:polished_blackstone_wall
+setblock 14 -59 0 minecraft:wither_skeleton_skull[rotation=8]
+setblock 13 -60 0 minecraft:chiseled_polished_blackstone
+setblock 13 -59 0 minecraft:respawn_anchor
+setblock 12 -60 1 minecraft:cauldron
+setblock 13 -60 1 minecraft:polished_blackstone_brick_stairs[facing=north]
+setblock 14 -60 1 minecraft:lectern[facing=south]
+setblock 15 -59 4 minecraft:barrier
+fill 24 -60 0 26 -60 0 minecraft:polished_blackstone_bricks
+fill 24 -59 0 26 -59 0 minecraft:chiseled_polished_blackstone
+setblock 25 -58 0 minecraft:soul_lantern
+setblock 24 -60 1 minecraft:cauldron
+setblock 25 -60 1 minecraft:respawn_anchor
+setblock 26 -60 1 minecraft:lectern[facing=south]
+setblock 24 -59 1 minecraft:wither_skeleton_wall_skull[facing=south]
+setblock 26 -59 1 minecraft:wither_skeleton_wall_skull[facing=south]
+setblock 27 -59 4 minecraft:barrier
+fill 36 -61 0 38 -61 2 minecraft:polished_blackstone_bricks
+setblock 36 -60 0 minecraft:polished_blackstone_wall
+setblock 36 -59 0 minecraft:wither_skeleton_skull[rotation=8]
+setblock 38 -60 2 minecraft:polished_blackstone_wall
+setblock 38 -59 2 minecraft:wither_skeleton_skull[rotation=8]
+setblock 38 -60 0 minecraft:soul_lantern
+setblock 36 -60 2 minecraft:soul_lantern
+setblock 36 -60 1 minecraft:cauldron
+setblock 37 -60 1 minecraft:respawn_anchor
+setblock 38 -60 1 minecraft:lectern[facing=south]
+setblock 39 -59 4 minecraft:barrier

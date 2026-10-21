@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "GOG",
+    "CSC",
+    "BBB"
+  ],
+  "key": {
+    "G": "minecraft:gold_ingot",
+    "O": "minecraft:crying_obsidian",
+    "C": "minecraft:chiseled_polished_blackstone",
+    "S": "minecraft:soul_soil",
+    "B": "minecraft:polished_blackstone_bricks"
+  },
+  "result": {
+    "id": "skullsanctum:sacrificial_altar"
+  }
+}

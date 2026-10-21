@@ -1,0 +1,13 @@
+# A sanctum at the origin facing south: altar 0,-60,0, cauldron west of it, lectern east, back wall at z=-1.
+time set noon
+weather clear
+gamerule doDaylightCycle false
+forceload add -16 -16 16 16
+fill -8 -60 -8 8 -50 8 minecraft:air
+fill -8 -61 -8 8 -61 8 minecraft:grass_block
+kill @e[type=minecraft:item]
+fill -1 -60 -1 1 -60 -1 minecraft:polished_blackstone_bricks
+fill -1 -59 -1 1 -59 -1 minecraft:chiseled_polished_blackstone
+setblock -1 -60 0 minecraft:cauldron
+setblock -1 -59 0 minecraft:wither_skeleton_wall_skull[facing=south]
+setblock 0 -60 0 skullsanctum:sacrificial_altar[facing=south]

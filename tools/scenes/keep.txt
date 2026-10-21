@@ -1,0 +1,3 @@
+time set noon
+kill @e[type=minecraft:item]
+setblock -2 -58 2 minecraft:barrier

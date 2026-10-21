@@ -1,0 +1,34 @@
+{
+  "variants": {
+    "facing=north,formed=false": {
+      "model": "skullsanctum:block/sacrificial_altar"
+    },
+    "facing=north,formed=true": {
+      "model": "skullsanctum:block/sacrificial_altar_formed"
+    },
+    "facing=east,formed=false": {
+      "model": "skullsanctum:block/sacrificial_altar",
+      "y": 90
+    },
+    "facing=east,formed=true": {
+      "model": "skullsanctum:block/sacrificial_altar_formed",
+      "y": 90
+    },
+    "facing=south,formed=false": {
+      "model": "skullsanctum:block/sacrificial_altar",
+      "y": 180
+    },
+    "facing=south,formed=true": {
+      "model": "skullsanctum:block/sacrificial_altar_formed",
+      "y": 180
+    },
+    "facing=west,formed=false": {
+      "model": "skullsanctum:block/sacrificial_altar",
+      "y": 270
+    },
+    "facing=west,formed=true": {
+      "model": "skullsanctum:block/sacrificial_altar_formed",
+      "y": 270
+    }
+  }
+}

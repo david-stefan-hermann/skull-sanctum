@@ -1,0 +1,9 @@
+{
+  "parent": "minecraft:block/enchanting_table",
+  "textures": {
+    "particle": "skullsanctum:block/head_atlas_bottom",
+    "top": "skullsanctum:block/head_atlas_top",
+    "side": "skullsanctum:block/head_atlas_side",
+    "bottom": "skullsanctum:block/head_atlas_bottom"
+  }
+}

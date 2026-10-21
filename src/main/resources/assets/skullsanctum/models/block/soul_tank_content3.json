@@ -1,0 +1,27 @@
+{
+  "textures": {
+    "particle": "skullsanctum:block/soul_essence",
+    "content": "skullsanctum:block/soul_essence"
+  },
+  "elements": [
+    {
+      "from": [
+        2,
+        12,
+        2
+      ],
+      "to": [
+        14,
+        12,
+        14
+      ],
+      "light_emission": 15,
+      "shade": false,
+      "faces": {
+        "up": {
+          "texture": "#content"
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,49 @@
+{
+  "multipart": [
+    {
+      "apply": {
+        "model": "skullsanctum:block/soul_tank"
+      }
+    },
+    {
+      "when": {
+        "level": "1"
+      },
+      "apply": {
+        "model": "skullsanctum:block/soul_tank_content1"
+      }
+    },
+    {
+      "when": {
+        "level": "2"
+      },
+      "apply": {
+        "model": "skullsanctum:block/soul_tank_content2"
+      }
+    },
+    {
+      "when": {
+        "level": "3"
+      },
+      "apply": {
+        "model": "skullsanctum:block/soul_tank_content3"
+      }
+    },
+    {
+      "when": {
+        "level": "4"
+      },
+      "apply": {
+        "model": "skullsanctum:block/soul_tank_content4"
+      }
+    },
+    {
+      "when": {
+        "burning": "true"
+      },
+      "apply": {
+        "model": "skullsanctum:block/soul_tank_flame"
+      }
+    }
+  ]
+}

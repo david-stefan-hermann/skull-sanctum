@@ -1,0 +1,5 @@
+clear @a
+give @a minecraft:diamond 8
+give @a minecraft:cobblestone 64
+give @a minecraft:gold_ingot 20
+give @a skullsanctum:soul 30

@@ -1,0 +1,3 @@
+give @a skullsanctum:soul 64
+give @a skullsanctum:soul 64
+give @a skullsanctum:soul 64
