@@ -46,6 +46,7 @@ public final class GuideBook {
         ItemStack cauldron = new ItemStack(Items.CAULDRON);
         ItemStack table = new ItemStack(Items.ENCHANTING_TABLE);
         ItemStack head = new ItemStack(Items.PLAYER_HEAD);
+        ItemStack skull = new ItemStack(SkullSanctum.PORTABLE_ATLAS_ITEM);
 
         List<Section> sanctum = new ArrayList<>(List.of(new Text(key("sanctum.text")), new Heading(key("heading.blocks"))));
         for (Map.Entry<Block, Integer> part : SacrificialAltarBlockEntity.bill().entrySet()) {
@@ -94,6 +95,15 @@ public final class GuideBook {
                         new Break(),
                         new Heading(key("heading.use")),
                         new Text(key("soul.use")))),
+                new Chapter(key("portable_atlas"), skull, Chapter.Side.LEFT, List.of(
+                        new Text(key("portable_atlas.text")), new Quote(key("portable_atlas.motto")),
+                        new Heading(key("heading.crafting")), BOOK.recipe("portable_atlas"),
+                        new Text(key("portable_atlas.recipe")),
+                        new Break(),
+                        new Heading(key("heading.use")),
+                        new ItemLine(List.of(altar), key("portable_atlas.bind")),
+                        new ItemLine(List.of(skull), key("portable_atlas.place")),
+                        new Text(key("portable_atlas.break")))),
                 new Chapter(key("sanctum"), new ItemStack(Items.CHISELED_POLISHED_BLACKSTONE), Chapter.Side.RIGHT, sanctum),
                 new Chapter(key("sacrifices"), new ItemStack(Items.DIAMOND), Chapter.Side.RIGHT, List.of(
                         new Text(key("sacrifices.text")),

@@ -93,6 +93,20 @@ soul gives one soul.
 
 - The Head Atlas pays with the souls in the sanctum's tank first, then with the souls you carry.
 
+## Portable Head Atlas
+
+A skull with soul-green eyes. Set down, it floats and turns, souls circle it, and it whispers and laughs now and then.
+Bound to a sanctum, it is that sanctum's Head Atlas anywhere: in any place, in any dimension.
+
+- Crafted from a skeleton skull between four ender pearls and four souls.
+- Right-click an awake Sacrificial Altar with the skull in hand: it is bound to that sanctum. Its tooltip names the
+  altar.
+- Set it down wherever you like. A right click opens the sanctum's Head Atlas for any player, with the title *Portable
+  Head Atlas*, paid with the souls in the sanctum's tank first, then with the buyer's own. The sanctum's chunk is
+  loaded for the purchase when it is not.
+- Break it to take it with you, quickest with an axe: it stays bound. While its sanctum sleeps or its altar is gone, it says so and opens
+  nothing. Bound to nothing, it says that too.
+
 ## The Sanctum
 
 The altar only needs a cauldron and an enchanting table that fit with it into a 3×3×3 box. Everything else is

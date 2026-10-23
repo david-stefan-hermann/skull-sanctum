@@ -20,6 +20,8 @@ public final class SanctumUi {
     public static final int STONE = 0xFF1A181F, STONE_DARK = 0xFF121016, STONE_LINE = 0xFF3A3542, STONE_DEEP = 0xFF0A090C;
     public static final int BONE = 0xFFE6DCC8, BONE_DARK = 0xFFC9BDA3, BONE_EDGE = 0xFFA59C88, BONE_LIGHT = 0xFFF1ECDF;
     public static final int INK = 0xFF2C2933, INK_GREEN = 0xFF13401F;
+    /** The skull of the mod icon: dark bone, its shadow, and the ink of its eye sockets; the eyes are SKULL_EYE and SKULL_EYE_BRIGHT. */
+    public static final int SKULL_BONE = 0xFF6A6A74, SKULL_SHADOW = 0xFF4A4A52, SKULL_INK = 0xFF121016, SKULL_EYE = 0xFF55E06A, SKULL_EYE_BRIGHT = 0xFFD8FFD0;
     /** The souls as a liquid: the tank's animation in the soul item's colours, a block texture so that it animates. */
     public static final SpriteId SOUL_VIAL = Sheets.BLOCKS_MAPPER.apply(SkullSanctum.id("soul_vial"));
     /** The height of the title bar of the sanctum's screens. */
@@ -114,20 +116,20 @@ public final class SanctumUi {
         if (selected) g.fill(x + 1, y + h - 6, x + 17, y + h - 2, SOUL_DEEP);
     }
 
-    /** The mod's skull, 12 × 12 pixels of bone with soul-green eyes, drawn with its top left corner at {@code x, y}. */
+    /** The mod's skull, 12 × 12 pixels in the colours of the mod icon's skull, drawn with its top left corner at {@code x, y}. */
     public static void skull(GuiGraphicsExtractor g, int x, int y) {
-        g.fill(x + 1, y, x + 11, y + 3, BONE);          // the crown
-        g.fill(x, y + 3, x + 12, y + 8, BONE);          // the face
-        g.fill(x + 2, y + 8, x + 10, y + 10, BONE);     // the jaw
-        g.fill(x + 3, y + 10, x + 5, y + 12, BONE);     // the teeth
-        g.fill(x + 7, y + 10, x + 9, y + 12, BONE);
-        g.fill(x + 1, y + 2, x + 11, y + 3, BONE_EDGE); // the brow's shadow
-        g.fill(x + 2, y + 9, x + 10, y + 10, BONE_EDGE);
-        g.fill(x + 2, y + 4, x + 5, y + 7, SOUL);       // the eyes
-        g.fill(x + 7, y + 4, x + 10, y + 7, SOUL);
-        g.fill(x + 3, y + 5, x + 4, y + 6, SOUL_BRIGHT);
-        g.fill(x + 8, y + 5, x + 9, y + 6, SOUL_BRIGHT);
-        g.fill(x + 5, y + 7, x + 7, y + 8, INK);        // the nose
+        g.fill(x + 1, y, x + 11, y + 3, SKULL_BONE);          // the crown
+        g.fill(x, y + 3, x + 12, y + 8, SKULL_BONE);          // the face
+        g.fill(x + 2, y + 8, x + 10, y + 10, SKULL_BONE);     // the jaw
+        g.fill(x + 3, y + 10, x + 5, y + 12, SKULL_BONE);     // the teeth
+        g.fill(x + 7, y + 10, x + 9, y + 12, SKULL_BONE);
+        g.fill(x + 1, y + 2, x + 11, y + 3, SKULL_SHADOW);    // the brow's shadow
+        g.fill(x + 2, y + 9, x + 10, y + 10, SKULL_SHADOW);
+        g.fill(x + 2, y + 4, x + 5, y + 7, SKULL_EYE);        // the eyes
+        g.fill(x + 7, y + 4, x + 10, y + 7, SKULL_EYE);
+        g.fill(x + 3, y + 5, x + 4, y + 6, SKULL_EYE_BRIGHT);
+        g.fill(x + 8, y + 5, x + 9, y + 6, SKULL_EYE_BRIGHT);
+        g.fill(x + 5, y + 7, x + 7, y + 8, SKULL_INK);        // the nose
     }
 
     /** The title of a sanctum screen: the skull and the title at the top of its panel. */

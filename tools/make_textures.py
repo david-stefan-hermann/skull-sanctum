@@ -9,6 +9,7 @@ Writes into src/main/resources/assets/skullsanctum/textures/:
 - block/head_atlas_*: the enchanting table in amethyst cloth with gold, soul-green crystals, blackstone; its book
 - particle/soul_flame: the soul fire flame particle turned green
 - item/soul: an animated soul wisp; item/guide_book: vanilla's book in the mod's colour with a soul on the cover
+- block/portable_atlas: the skeleton skull in the icon's colours with soul-green eyes that shimmer and flicker without pause
 With --preview also run/texture-preview/textures.png: every texture at 8x, side by side.
 """
 import colorsys
@@ -356,6 +357,106 @@ sheet = Image.new('RGBA', (16, 16 * SOUL_FRAMES))
 for t, frame in enumerate(soul_frames):
     sheet.paste(frame, (0, 16 * t))
 save(sheet, 'item/soul', json.dumps({'animation': {'frametime': 2, 'interpolate': False}}, indent=2) + '\n')
+
+# ---------------------------------------------------------------- portable Head Atlas: the mod icon's skull as a skeleton skull
+# The skeleton skull of the 26.2 jar in the icon's greys (bone, shadow, dark, ink), its face redrawn after the
+# photographed skull block: 2 × 2 soul-green eyes, a nose, two dark teeth corners, and a crack running from the top of
+# the skull down between the eyes (texture round 3, variant 4 "Cracked"). The eyes sparkle without pause (eye round 3,
+# proposal 5): every one of their eight pixels twinkles on its own rhythm through the soul item's greens up to the
+# glint and back ("starlight", periods of 24 and 36 ticks), and over that the whole of each eye flickers like a flame
+# between the soul green and the two next greens, a new shade every 3 ticks from a fixed random table, each eye its
+# own. One frame per tick of the 144-tick cycle, equal frames shared; they never go dark. The frames are 64 × 32, the
+# layout of the skull model's head (top 8,0; bottom 16,0; right 0,8; front 8,8; left 16,8; back 24,8), as a vertical
+# strip; the block atlas animates it for the block entity renderer and the item model alike.
+SKULL_BONE, SKULL_SHADOW, SKULL_DARK, SKULL_INK, SKULL_OUTLINE = (106, 106, 116), (74, 74, 82), (48, 48, 56), (18, 16, 22), (14, 11, 18)
+SKULL_EYE, SKULL_GLINT = SOUL_GREEN, SOUL_LIGHT
+SKULL_RAMP = [SOUL_GREEN, SOUL_ITEM[2], SOUL_ITEM[4], SOUL_LIGHT, SOUL_ITEM[4], SOUL_ITEM[2]]  # a pixel's twinkle
+SKULL_FLICKER = [SOUL_GREEN, SOUL_ITEM[1], SOUL_ITEM[2]]  # the whole eye's flame
+SKULL_PHASE = [0, 7, 3, 10, 5, 1, 8, 4]
+SKULL_PERIOD = [24, 36, 24, 36, 36, 24, 36, 24]
+SKULL_CYCLE, SKULL_FLICKER_STEP = 144, 3
+SKULL_FACES = {'top': (8, 0), 'bottom': (16, 0), 'right': (0, 8), 'front': (8, 8), 'left': (16, 8), 'back': (24, 8)}
+SKULL_PALETTE = {'G': SKULL_BONE, 'g': SKULL_SHADOW, 'd': SKULL_DARK, 'k': SKULL_INK, 'K': SKULL_OUTLINE, 'E': SKULL_EYE}
+SKULL_FRONT = ['gGGdGGgg',
+               'GGGkgGgg',
+               'GGggkgGg',
+               'GEEGgEEg',
+               'GEEggEEg',
+               'gGGddGgg',
+               'gkGGGGkg',
+               'gdgggggd']
+SKULL_TOP_CRACK = {(3, 7): SKULL_DARK, (3, 6): SKULL_INK, (3, 5): SKULL_INK, (2, 4): SKULL_DARK}
+SKULL_EYES = [(1, 3), (2, 3), (1, 4), (2, 4), (5, 3), (6, 3), (5, 4), (6, 4)]
+_rng = random.Random(7)
+SKULL_SHADES = [_rng.random() for _ in range(SKULL_CYCLE // SKULL_FLICKER_STEP)]
+
+
+def skull_eyes(t):
+    """The colours of the eight eye pixels (left eye TL, TR, BL, BR, then the right eye) at tick t of the cycle."""
+    k = (t // SKULL_FLICKER_STEP) % len(SKULL_SHADES)
+    flame = [SKULL_FLICKER[int(SKULL_SHADES[k] * 3)], SKULL_FLICKER[int(SKULL_SHADES[(k + 17) % len(SKULL_SHADES)] * 3)]]
+    colours = []
+    for i in range(8):
+        pos = ((t + SKULL_PHASE[i] * 2) % SKULL_PERIOD[i]) * len(SKULL_RAMP) // SKULL_PERIOD[i]
+        star = SKULL_RAMP[pos]
+        colours.append(flame[i // 4] if star == SOUL_GREEN else star)  # a pixel at rest takes the flame's shade
+    return tuple(colours)
+
+
+def skull_grey(value):
+    """The skeleton texture's greys (73..227) in the icon's four tones."""
+    if value <= 73:
+        return SKULL_INK
+    if value <= 142:
+        return SKULL_DARK
+    if value <= 173:
+        return SKULL_SHADOW
+    return SKULL_BONE
+
+
+def skull_frame(eyes):
+    skeleton = vanilla('entity/skeleton/skeleton')
+    frame = Image.new('RGBA', (64, 32))
+    for name, (ox, oy) in SKULL_FACES.items():
+        for y in range(8):
+            for x in range(8):
+                r, g, b, a = skeleton.getpixel((ox + x, oy + y))
+                if a:
+                    put(frame, [(ox + x, oy + y)], skull_grey(r))
+    fx, fy = SKULL_FACES['front']
+    for y, row in enumerate(SKULL_FRONT):
+        for x, c in enumerate(row):
+            put(frame, [(fx + x, fy + y)], SKULL_PALETTE[c])
+    tx, ty = SKULL_FACES['top']
+    for (x, y), colour in SKULL_TOP_CRACK.items():
+        put(frame, [(tx + x, ty + y)], colour)
+    # the skeleton's bottom is a ring around a hole: a floating skull shows its bottom, so it is closed in the shadow
+    # tone, with the spinal opening as a dark 2 x 2 spot at the back
+    bx, by = SKULL_FACES['bottom']
+    put(frame, [(bx + x, by + y) for x in range(1, 7) for y in range(1, 7)], SKULL_SHADOW)
+    put(frame, [(bx + x, by + y) for x in (3, 4) for y in (5, 6)], SKULL_INK)
+    for (x, y), colour in zip(SKULL_EYES, eyes):
+        put(frame, [(fx + x, fy + y)], colour)
+    return frame
+
+
+skull_unique = []  # the distinct eye states, in order of first appearance: the strip's frames
+skull_sequence = []  # (frame, ticks) over the cycle, equal neighbours merged
+for t in range(SKULL_CYCLE):
+    eyes = skull_eyes(t)
+    if eyes not in skull_unique:
+        skull_unique.append(eyes)
+    index = skull_unique.index(eyes)
+    if skull_sequence and skull_sequence[-1][0] == index:
+        skull_sequence[-1] = (index, skull_sequence[-1][1] + 1)
+    else:
+        skull_sequence.append((index, 1))
+skull_frames = [skull_frame(eyes) for eyes in skull_unique]
+sheet = Image.new('RGBA', (64, 32 * len(skull_frames)))
+for t, frame in enumerate(skull_frames):
+    sheet.paste(frame, (0, 32 * t))
+save(sheet, 'block/portable_atlas', json.dumps({'animation': {'interpolate': False, 'width': 64, 'height': 32,
+     'frames': [{'index': index, 'time': ticks} for index, ticks in skull_sequence]}}, indent=2) + '\n')
 
 # ---------------------------------------------------------------- guide book
 

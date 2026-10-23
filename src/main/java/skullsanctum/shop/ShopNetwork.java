@@ -16,10 +16,14 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Util;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.Vec3;
 import skullsanctum.Config;
 import skullsanctum.SkullSanctum;
 import skullsanctum.altar.SacrificialAltarBlockEntity;
+import skullsanctum.altar.Sanctum;
+import skullsanctum.atlas.HeadAtlasBlockEntity;
+import skullsanctum.portable.PortableAtlasBlockEntity;
 import skullsanctum.tank.SoulTankBlockEntity;
 
 import java.util.ArrayList;
@@ -33,9 +37,11 @@ import java.util.regex.Pattern;
 /**
  * The head browser's packets. The client never holds the catalog: it asks for one page at a time (a category, a
  * search or the favourites) and the server answers with the heads on it. A search word matches the start of a word
- * of a head's name or tags; heads matched by name come first ({@link #score}). Buying is checked on the server: the
- * sanctum must be formed and near, the souls come from its tank first, then from the player's inventory. On join the
- * client learns the server's tank capacity and player head price for the guide book ({@link Settings}).
+ * of a head's name or tags; heads matched by name come first ({@link #score}). Every request names its anchor, the
+ * block that was clicked: a Head Atlas, which belongs to the sanctum around it, or a portable Head Atlas, which is
+ * bound to an altar anywhere. Buying is checked on the server: the player must stand near the anchor, the sanctum
+ * must be awake, the souls come from its tank first, then from the player's inventory. On join the client learns the
+ * server's tank capacity and player head price for the guide book ({@link Settings}).
  */
 public final class ShopNetwork {
     /** Heads per page: the browser's grid of 9 by 7. */
@@ -84,12 +90,16 @@ public final class ShopNetwork {
                 Entry::new);
     }
 
-    /** Server → client: open the browser of this sanctum; the tank's souls and capacity fill its vial. */
-    public record Open(BlockPos altar, List<CategoryInfo> categories, int playerHeadPrice, int balance, int tankSouls, int tankCapacity)
-            implements CustomPacketPayload {
+    /**
+     * Server → client: open the browser at this anchor (a portable Head Atlas, or the sanctum's own); the tank's souls
+     * and capacity fill its vial.
+     */
+    public record Open(BlockPos anchor, boolean portable, List<CategoryInfo> categories, int playerHeadPrice, int balance, int tankSouls,
+                       int tankCapacity) implements CustomPacketPayload {
         public static final Type<Open> TYPE = new Type<>(SkullSanctum.id("open_browser"));
         public static final StreamCodec<RegistryFriendlyByteBuf, Open> CODEC = StreamCodec.composite(
-                BlockPos.STREAM_CODEC, Open::altar,
+                BlockPos.STREAM_CODEC, Open::anchor,
+                ByteBufCodecs.BOOL, Open::portable,
                 CategoryInfo.CODEC.apply(ByteBufCodecs.list(256)), Open::categories,
                 ByteBufCodecs.VAR_INT, Open::playerHeadPrice,
                 ByteBufCodecs.VAR_INT, Open::balance,
@@ -104,10 +114,10 @@ public final class ShopNetwork {
     }
 
     /** Client → server: a page of a category ({@code mode} ≥ 0), of all heads or of the favourites. */
-    public record Query(BlockPos altar, int mode, String search, int page) implements CustomPacketPayload {
+    public record Query(BlockPos anchor, int mode, String search, int page) implements CustomPacketPayload {
         public static final Type<Query> TYPE = new Type<>(SkullSanctum.id("query_heads"));
         public static final StreamCodec<RegistryFriendlyByteBuf, Query> CODEC = StreamCodec.composite(
-                BlockPos.STREAM_CODEC, Query::altar,
+                BlockPos.STREAM_CODEC, Query::anchor,
                 ByteBufCodecs.VAR_INT, Query::mode,
                 ByteBufCodecs.stringUtf8(64), Query::search,
                 ByteBufCodecs.VAR_INT, Query::page,
@@ -141,10 +151,10 @@ public final class ShopNetwork {
     }
 
     /** Client → server: buy {@code count} of the catalog head at {@code index}. */
-    public record Buy(BlockPos altar, int index, String uuid, int count) implements CustomPacketPayload {
+    public record Buy(BlockPos anchor, int index, String uuid, int count) implements CustomPacketPayload {
         public static final Type<Buy> TYPE = new Type<>(SkullSanctum.id("buy_head"));
         public static final StreamCodec<RegistryFriendlyByteBuf, Buy> CODEC = StreamCodec.composite(
-                BlockPos.STREAM_CODEC, Buy::altar,
+                BlockPos.STREAM_CODEC, Buy::anchor,
                 ByteBufCodecs.VAR_INT, Buy::index,
                 ByteBufCodecs.stringUtf8(64), Buy::uuid,
                 ByteBufCodecs.VAR_INT, Buy::count,
@@ -157,10 +167,10 @@ public final class ShopNetwork {
     }
 
     /** Client → server: buy {@code count} heads of the player with this name. */
-    public record BuyPlayer(BlockPos altar, String name, int count) implements CustomPacketPayload {
+    public record BuyPlayer(BlockPos anchor, String name, int count) implements CustomPacketPayload {
         public static final Type<BuyPlayer> TYPE = new Type<>(SkullSanctum.id("buy_player_head"));
         public static final StreamCodec<RegistryFriendlyByteBuf, BuyPlayer> CODEC = StreamCodec.composite(
-                BlockPos.STREAM_CODEC, BuyPlayer::altar,
+                BlockPos.STREAM_CODEC, BuyPlayer::anchor,
                 ByteBufCodecs.stringUtf8(16), BuyPlayer::name,
                 ByteBufCodecs.VAR_INT, BuyPlayer::count,
                 BuyPlayer::new);
@@ -215,12 +225,12 @@ public final class ShopNetwork {
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) ->
                 sender.sendPacket(new Settings(Config.get().tankCapacity(), Config.get().playerHeadPrice())));
         ServerPlayNetworking.registerGlobalReceiver(Query.TYPE, (payload, context) -> {
-            SacrificialAltarBlockEntity altar = altarInReach(context.player(), payload.altar());
+            SacrificialAltarBlockEntity altar = altarInReach(context.player(), payload.anchor());
             ServerPlayNetworking.send(context.player(), altar == null ? gone(context.player()) : page(context.player(), altar, payload));
         });
         ServerPlayNetworking.registerGlobalReceiver(Buy.TYPE, (payload, context) -> {
             ServerPlayer player = context.player();
-            SacrificialAltarBlockEntity altar = altarInReach(player, payload.altar());
+            SacrificialAltarBlockEntity altar = altarInReach(player, payload.anchor());
             if (altar == null) {
                 ServerPlayNetworking.send(player, gone(player));
                 return;
@@ -239,7 +249,7 @@ public final class ShopNetwork {
         ServerPlayNetworking.registerGlobalReceiver(BuyPlayer.TYPE, (payload, context) -> {
             ServerPlayer player = context.player();
             String name = payload.name().trim();
-            if (altarInReach(player, payload.altar()) == null) {
+            if (altarInReach(player, payload.anchor()) == null) {
                 ServerPlayNetworking.send(player, gone(player));
                 return;
             }
@@ -251,7 +261,7 @@ public final class ShopNetwork {
             CompletableFuture.supplyAsync(() -> server.services().profileResolver().fetchByName(name), Util.nonCriticalIoPool())
                     .whenCompleteAsync((profile, error) -> {
                         if (player.isRemoved()) return;
-                        SacrificialAltarBlockEntity altar = altarInReach(player, payload.altar());
+                        SacrificialAltarBlockEntity altar = altarInReach(player, payload.anchor());
                         if (altar == null) {
                             ServerPlayNetworking.send(player, gone(player));
                             return;
@@ -272,8 +282,8 @@ public final class ShopNetwork {
         });
     }
 
-    /** The enchanting table of an awake sanctum was used: the browser opens. */
-    public static void openBrowser(ServerPlayer player, SacrificialAltarBlockEntity altar) {
+    /** A Head Atlas at {@code anchor} (the sanctum's own, or a portable one bound to {@code altar}) was used: the browser opens. */
+    public static void openBrowser(ServerPlayer player, BlockPos anchor, SacrificialAltarBlockEntity altar, boolean portable) {
         List<CategoryInfo> infos = new ArrayList<>();
         List<HeadCatalog.Category> categories = HeadCatalog.categories();
         int[] counts = new int[categories.size()];
@@ -282,7 +292,7 @@ public final class ShopNetwork {
             String name = categories.get(i).name();
             infos.add(new CategoryInfo(name, counts[i], Config.get().price(name)));
         }
-        ServerPlayNetworking.send(player, new Open(altar.getBlockPos(), infos, Config.get().playerHeadPrice(),
+        ServerPlayNetworking.send(player, new Open(anchor, portable, infos, Config.get().playerHeadPrice(),
                 Wallet.balance(player, altar), tankSouls(altar), Config.get().tankCapacity()));
     }
 
@@ -414,9 +424,20 @@ public final class ShopNetwork {
         return new Result(true, "gui.skullsanctum.browser.bought", count + "× " + name, Wallet.balance(player, altar), tankSouls(altar));
     }
 
-    /** The formed altar at {@code pos} if the player stands near it, otherwise null. */
-    static SacrificialAltarBlockEntity altarInReach(ServerPlayer player, BlockPos pos) {
+    /**
+     * The awake altar behind the anchor at {@code pos} if the player stands near it, otherwise null: a Head Atlas
+     * names the sanctum around it, a portable Head Atlas the altar it is bound to (in whatever dimension), and the
+     * altar itself stands for its sanctum.
+     */
+    public static SacrificialAltarBlockEntity altarInReach(ServerPlayer player, BlockPos pos) {
         if (!player.level().isLoaded(pos) || player.distanceToSqr(Vec3.atCenterOf(pos)) > REACH * REACH) return null;
-        return player.level().getBlockEntity(pos) instanceof SacrificialAltarBlockEntity altar && altar.formed() ? altar : null;
+        BlockEntity anchor = player.level().getBlockEntity(pos);
+        SacrificialAltarBlockEntity altar = switch (anchor) {
+            case SacrificialAltarBlockEntity own -> own;
+            case HeadAtlasBlockEntity table -> Sanctum.altarOfTable(player.level(), pos);
+            case PortableAtlasBlockEntity skull -> skull.altar(player.level().getServer());
+            case null, default -> null;
+        };
+        return altar != null && altar.formed() ? altar : null;
     }
 }

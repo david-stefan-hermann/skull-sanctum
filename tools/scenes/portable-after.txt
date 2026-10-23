@@ -1,0 +1,5 @@
+clear @a
+item replace entity @a hotbar.0 with skullsanctum:portable_atlas
+item replace entity @a hotbar.1 with minecraft:skeleton_skull
+item replace entity @a hotbar.2 with minecraft:wither_skeleton_skull
+item replace entity @a hotbar.3 with minecraft:polished_blackstone_bricks

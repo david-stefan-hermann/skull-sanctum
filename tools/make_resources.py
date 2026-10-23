@@ -85,6 +85,39 @@ write(f'data/{NS}/loot_table/blocks/head_atlas.json', {
     'pools': [{'rolls': 1, 'bonus_rolls': 0, 'condition': {'type': 'minecraft:survives_explosion'},
                'entries': [{'type': 'minecraft:item', 'name': 'minecraft:enchanting_table'}]}]})
 
+# ---------------------------------------------------------------- portable Head Atlas: a skull, floating and turning
+# The block entity renderer draws the skull model with the atlas's animated sprite; the block model only lends its
+# particle texture and the item its shape: the skull's head cube, 8 pixels, standing on the block's floor and facing
+# south, its faces cut from the 64 x 32 frames of the skin layout (a frame's pixel is a quarter of a UV unit across
+# and half a unit down). In the hand, on the ground and in the inventory it is shown as vanilla shows its skulls:
+# the display block is minecraft:item/template_skull's.
+
+
+def skull_uv(x, y):
+    return [x / 4, y / 2, (x + 8) / 4, (y + 8) / 2]
+
+
+write(f'assets/{NS}/models/block/portable_atlas.json', {
+    'textures': {'particle': tex('portable_atlas'), 'skull': tex('portable_atlas')},
+    'elements': [{'from': [4, 0, 4], 'to': [12, 8, 12], 'faces': {
+        'south': {'uv': skull_uv(8, 8), 'texture': '#skull'}, 'north': {'uv': skull_uv(24, 8), 'texture': '#skull'},
+        'west': {'uv': skull_uv(0, 8), 'texture': '#skull'}, 'east': {'uv': skull_uv(16, 8), 'texture': '#skull'},
+        'up': {'uv': skull_uv(8, 0), 'texture': '#skull'}, 'down': {'uv': skull_uv(16, 0), 'texture': '#skull'}}}],
+    'display': {
+        'gui': {'rotation': [30, 45, 0], 'translation': [0, 3, 0], 'scale': [1, 1, 1]},
+        'fixed': {'rotation': [0, 180, 0], 'translation': [0, 4, 0], 'scale': [1, 1, 1]},
+        'on_shelf': {'rotation': [0, 0, 0], 'translation': [0, 8, 0], 'scale': [2, 2, 2]},
+        'ground': {'rotation': [0, 0, 0], 'translation': [0, 3, 0], 'scale': [0.5, 0.5, 0.5]},
+        'thirdperson_righthand': {'rotation': [45, 45, 0], 'translation': [0, 3, 0], 'scale': [0.5, 0.5, 0.5]}}})
+write(f'assets/{NS}/blockstates/portable_atlas.json', {'variants': {'': {'model': f'{NS}:block/portable_atlas'}}})
+write(f'assets/{NS}/items/portable_atlas.json', {'model': {'type': 'minecraft:model', 'model': f'{NS}:block/portable_atlas'}})
+# breaking it keeps the altar it is bound to
+write(f'data/{NS}/loot_table/blocks/portable_atlas.json', {
+    'type': 'minecraft:block', 'random_sequence': f'{NS}:blocks/portable_atlas',
+    'pools': [{'rolls': 1, 'bonus_rolls': 0, 'condition': {'type': 'minecraft:survives_explosion'},
+               'entries': [{'type': 'minecraft:item', 'name': f'{NS}:portable_atlas', 'modifier': {
+                   'type': 'minecraft:copy_components', 'source': 'block_entity', 'include': [f'{NS}:bound_altar']}}]}]})
+
 # ---------------------------------------------------------------- items, particle
 
 for name in ('soul', 'guide_book'):
@@ -104,6 +137,7 @@ write(f'data/{NS}/loot_table/blocks/soul_tank.json', {
     'pools': [{'rolls': 1, 'bonus_rolls': 0, 'condition': {'type': 'minecraft:survives_explosion'},
                'entries': [{'type': 'minecraft:item', 'name': 'minecraft:cauldron'}]}]})
 write('data/minecraft/tags/block/mineable/pickaxe.json', {'values': [f'{NS}:sacrificial_altar', f'{NS}:soul_tank', f'{NS}:head_atlas']})
+write('data/minecraft/tags/block/mineable/axe.json', {'values': [f'{NS}:portable_atlas']})  # bone: an axe takes it down quickest
 
 # ---------------------------------------------------------------- recipes and their unlocks
 
@@ -129,6 +163,12 @@ write(f'data/{NS}/recipe/guide_book.json', {
     'type': 'minecraft:crafting_shapeless', 'category': 'misc',
     'ingredients': ['minecraft:book', 'minecraft:wither_skeleton_skull'], 'result': {'id': f'{NS}:guide_book'}})
 unlock('guide_book', ['minecraft:book', 'minecraft:wither_skeleton_skull'])
+write(f'data/{NS}/recipe/portable_atlas.json', {
+    'type': 'minecraft:crafting_shaped', 'category': 'misc',
+    'pattern': ['SES', 'EKE', 'SES'],
+    'key': {'S': f'{NS}:soul', 'E': 'minecraft:ender_pearl', 'K': 'minecraft:skeleton_skull'},
+    'result': {'id': f'{NS}:portable_atlas'}})
+unlock('portable_atlas', [f'{NS}:soul', 'minecraft:skeleton_skull'])
 
 # ---------------------------------------------------------------- what a sacrifice is worth, in souls per item
 

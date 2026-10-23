@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "SES",
+    "EKE",
+    "SES"
+  ],
+  "key": {
+    "S": "skullsanctum:soul",
+    "E": "minecraft:ender_pearl",
+    "K": "minecraft:skeleton_skull"
+  },
+  "result": {
+    "id": "skullsanctum:portable_atlas"
+  }
+}

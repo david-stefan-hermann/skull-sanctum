@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:block",
+  "random_sequence": "skullsanctum:blocks/portable_atlas",
+  "pools": [
+    {
+      "rolls": 1,
+      "bonus_rolls": 0,
+      "condition": {
+        "type": "minecraft:survives_explosion"
+      },
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "skullsanctum:portable_atlas",
+          "modifier": {
+            "type": "minecraft:copy_components",
+            "source": "block_entity",
+            "include": [
+              "skullsanctum:bound_altar"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
