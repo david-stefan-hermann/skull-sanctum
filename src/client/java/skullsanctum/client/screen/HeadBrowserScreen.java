@@ -7,11 +7,13 @@ import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ResolvableProfile;
 import net.minecraft.world.phys.Vec3;
@@ -210,6 +212,8 @@ public class HeadBrowserScreen extends Screen {
         message = Component.translatable(result.message(), result.argument());
         messageColor = result.bought() ? SanctumUi.SOUL : SanctumUi.WARN;
         messageTicks = 60;
+        // the purchase rings for the buyer alone, over the souls the sanctum lets go (ShopNetwork.buy)
+        if (result.bought()) minecraft.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.EXPERIENCE_ORB_PICKUP, 0.9f, 0.6f));
     }
 
     /** The sanctum is out of reach or asleep: the browser closes with a word on the HUD. */

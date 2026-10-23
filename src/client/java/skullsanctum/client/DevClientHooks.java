@@ -70,6 +70,10 @@ public final class DevClientHooks {
     private static void tick(Minecraft minecraft, String name, double[][] views, List<Action> actions, int end) {
         if (done || minecraft.level == null || minecraft.player == null) return;
         ticks++;
+        if (ticks == 1) { // the sounds a run plays, for the log (ALSOFT_DRIVERS=null lets them play without a device)
+            minecraft.getSoundManager().addListener((sound, events, range) -> LOGGER.info("Dev: sound {} pitch {}",
+                    sound.getIdentifier(), sound.getPitch()));
+        }
         if (!minecraft.gui.hud.isHidden()) minecraft.gui.hud.toggle();
         minecraft.gui.toastManager().clear();
         if (!actions.isEmpty()) {
