@@ -58,14 +58,18 @@ public class HeadAtlasRenderer implements BlockEntityRenderer<HeadAtlasBlockEnti
         pose.pushPose();
         pose.translate(0.5f, 0.75f, 0.5f);
         pose.translate(0.0f, 0.1f + Mth.sin(state.time * 0.1f) * 0.01f, 0.0f);
-        pose.mulPose(Axis.YP.rotation(-state.yRot));
-        pose.mulPose(Axis.ZP.rotationDegrees(80.0f));
+        pose.rotate(Axis.YP, -state.yRot);
+        pose.rotateDegrees(Axis.ZP, 80.0f);
         float left = Mth.frac(state.flip + 0.25f) * 1.6f - 0.3f;
         float right = Mth.frac(state.flip + 0.75f) * 1.6f - 0.3f;
         BookModel.State model = BookModel.State.forAnimation(state.time, Mth.clamp(left, 0.0f, 1.0f),
                 Mth.clamp(right, 0.0f, 1.0f), state.open);
-        collector.submitModel(book, model, pose, state.lightCoords, OverlayTexture.NO_OVERLAY, -1, BOOK, sprites, 0,
-                state.breakProgress);
+        collector.submitModel(book, model, pose, state.lightCoords, OverlayTexture.NO_OVERLAY, -1, BOOK, sprites, 0);
+        // the block being broken: its own pass, like vanilla's enchanting table
+        if (state.breakProgress != null) {
+            collector.order(1).submitCrumblingOverlay(book, model, pose, BOOK.renderType(book.renderType()),
+                    state.lightCoords, OverlayTexture.NO_OVERLAY, -1, state.breakProgress);
+        }
         pose.popPose();
     }
 }

@@ -4,7 +4,7 @@
     "has_the_recipe": {
       "trigger": "minecraft:recipe_unlocked",
       "conditions": {
-        "recipe": "skullsanctum:guide_book"
+        "recipes": "skullsanctum:guide_book"
       }
     },
     "has_book": {

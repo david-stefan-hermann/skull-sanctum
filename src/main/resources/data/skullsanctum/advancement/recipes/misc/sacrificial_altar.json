@@ -4,7 +4,7 @@
     "has_the_recipe": {
       "trigger": "minecraft:recipe_unlocked",
       "conditions": {
-        "recipe": "skullsanctum:sacrificial_altar"
+        "recipes": "skullsanctum:sacrificial_altar"
       }
     },
     "has_crying_obsidian": {

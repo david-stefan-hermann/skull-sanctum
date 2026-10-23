@@ -1,6 +1,5 @@
 package skullsanctum.altar;
 
-import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
@@ -35,7 +34,6 @@ import skullsanctum.SkullSanctum;
  * thrown onto it.
  */
 public class SacrificialAltarBlock extends BaseEntityBlock {
-    public static final MapCodec<SacrificialAltarBlock> CODEC = simpleCodec(SacrificialAltarBlock::new);
     public static final EnumProperty<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
     /** The sanctum around it is formed: the altar glows. */
     public static final BooleanProperty FORMED = BooleanProperty.create("formed");
@@ -45,11 +43,6 @@ public class SacrificialAltarBlock extends BaseEntityBlock {
     public SacrificialAltarBlock(Properties properties) {
         super(properties);
         registerDefaultState(stateDefinition.any().setValue(FACING, Direction.NORTH).setValue(FORMED, false));
-    }
-
-    @Override
-    protected MapCodec<SacrificialAltarBlock> codec() {
-        return CODEC;
     }
 
     @Override

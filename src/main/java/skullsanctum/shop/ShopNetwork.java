@@ -11,6 +11,7 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.Prediction;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Util;
@@ -405,7 +406,7 @@ public final class ShopNetwork {
         }
         Wallet.pay(player, altar, cost);
         ItemStack bought = head.copyWithCount(count);
-        if (!player.getInventory().add(bought)) player.drop(bought, false);
+        if (!player.getInventory().add(bought)) player.drop(bought, false, Prediction.SERVER_ONLY);
         player.level().playSound(null, player.blockPosition(), SoundEvents.SOUL_ESCAPE.value(), SoundSource.PLAYERS, 0.8f, 1.2f);
         SoulTankBlockEntity tank = altar.tank();
         SkullSanctum.LOGGER.debug("{} bought {}x {} for {} souls (tank left {})", player.getName().getString(), count, name,

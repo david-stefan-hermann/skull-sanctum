@@ -130,8 +130,9 @@ public final class DevClientHooks {
             case "close" -> minecraft.player.closeContainer();
             case "cmd" -> minecraft.player.connection.sendCommand(action.argument().replace('+', ' ')); // cmd data+merge+...
             case "key" -> { // a key press as the keyboard sends it: key=e
-                int key = org.lwjgl.glfw.GLFW.GLFW_KEY_A + Character.toUpperCase(args[0].charAt(0)) - 'A';
-                if (minecraft.gui.screen() != null) minecraft.gui.screen().keyPressed(new net.minecraft.client.input.KeyEvent(key, 0, 0));
+                // 26.3 key codes are scancodes, so look them up by their key.keyboard.* name like options.txt does
+                int key = com.mojang.blaze3d.platform.InputConstants.getKey("key.keyboard." + Character.toLowerCase(args[0].charAt(0))).getValue();
+                if (minecraft.gui.screen() != null) minecraft.gui.screen().keyPressed(new net.minecraft.client.input.KeyEvent(key, key, 0));
             }
             case "mouse" -> moveMouse(minecraft, Double.parseDouble(args[0]), Double.parseDouble(args[1]));
             case "shot" -> grab(minecraft, action.argument() + ".png");

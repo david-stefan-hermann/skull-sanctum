@@ -1,6 +1,5 @@
 package skullsanctum.tank;
 
-import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
@@ -35,7 +34,6 @@ import skullsanctum.SkullSanctum;
  * cannot reach it.
  */
 public class SoulTankBlock extends BaseEntityBlock {
-    public static final MapCodec<SoulTankBlock> CODEC = simpleCodec(SoulTankBlock::new);
     /** 0 empty, 1 to 4 a quarter to full. */
     public static final IntegerProperty LEVEL = IntegerProperty.create("level", 0, 4);
     public static final BooleanProperty BURNING = BooleanProperty.create("burning");
@@ -43,11 +41,6 @@ public class SoulTankBlock extends BaseEntityBlock {
     public SoulTankBlock(Properties properties) {
         super(properties);
         registerDefaultState(stateDefinition.any().setValue(LEVEL, 0).setValue(BURNING, false));
-    }
-
-    @Override
-    protected MapCodec<SoulTankBlock> codec() {
-        return CODEC;
     }
 
     @Override

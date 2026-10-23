@@ -1,6 +1,5 @@
 package skullsanctum.atlas;
 
-import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -32,16 +31,10 @@ import skullsanctum.shop.ShopNetwork;
  * breaking it gives the enchanting table back, and so does a click on one whose sanctum is gone.
  */
 public class HeadAtlasBlock extends BaseEntityBlock {
-    public static final MapCodec<HeadAtlasBlock> CODEC = simpleCodec(HeadAtlasBlock::new);
     private static final VoxelShape SHAPE = Block.box(0, 0, 0, 16, 12, 16);
 
     public HeadAtlasBlock(Properties properties) {
         super(properties);
-    }
-
-    @Override
-    protected MapCodec<HeadAtlasBlock> codec() {
-        return CODEC;
     }
 
     @Override

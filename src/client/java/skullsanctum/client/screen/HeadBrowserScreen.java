@@ -15,7 +15,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ResolvableProfile;
 import net.minecraft.world.phys.Vec3;
-import org.lwjgl.glfw.GLFW;
 import skullsanctum.shop.HeadStacks;
 import skullsanctum.shop.ShopNetwork;
 
@@ -487,8 +486,7 @@ public class HeadBrowserScreen extends Screen {
 
     /** Shift is held: the Buy button buys a stack and says so. */
     private boolean shiftHeld() {
-        return InputConstants.isKeyDown(minecraft.getWindow(), GLFW.GLFW_KEY_LEFT_SHIFT)
-                || InputConstants.isKeyDown(minecraft.getWindow(), GLFW.GLFW_KEY_RIGHT_SHIFT);
+        return InputConstants.isKeyDown(InputConstants.KEY_LSHIFT) || InputConstants.isKeyDown(InputConstants.KEY_RSHIFT);
     }
 
     private void drawBuy(GuiGraphicsExtractor g, int mouseX, int mouseY) {

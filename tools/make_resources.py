@@ -82,7 +82,7 @@ write(f'assets/{NS}/models/block/head_atlas.json', {
 write(f'assets/{NS}/blockstates/head_atlas.json', {'variants': {'': {'model': f'{NS}:block/head_atlas'}}})
 write(f'data/{NS}/loot_table/blocks/head_atlas.json', {
     'type': 'minecraft:block', 'random_sequence': f'{NS}:blocks/head_atlas',
-    'pools': [{'rolls': 1, 'bonus_rolls': 0, 'conditions': [{'condition': 'minecraft:survives_explosion'}],
+    'pools': [{'rolls': 1, 'bonus_rolls': 0, 'condition': {'type': 'minecraft:survives_explosion'},
                'entries': [{'type': 'minecraft:item', 'name': 'minecraft:enchanting_table'}]}]})
 
 # ---------------------------------------------------------------- items, particle
@@ -97,11 +97,11 @@ write(f'assets/{NS}/particles/soul_bubble.json', {'textures': [f'{NS}:soul_bubbl
 
 write(f'data/{NS}/loot_table/blocks/sacrificial_altar.json', {
     'type': 'minecraft:block', 'random_sequence': f'{NS}:blocks/sacrificial_altar',
-    'pools': [{'rolls': 1, 'bonus_rolls': 0, 'conditions': [{'condition': 'minecraft:survives_explosion'}],
+    'pools': [{'rolls': 1, 'bonus_rolls': 0, 'condition': {'type': 'minecraft:survives_explosion'},
                'entries': [{'type': 'minecraft:item', 'name': f'{NS}:sacrificial_altar'}]}]})
 write(f'data/{NS}/loot_table/blocks/soul_tank.json', {
     'type': 'minecraft:block', 'random_sequence': f'{NS}:blocks/soul_tank',
-    'pools': [{'rolls': 1, 'bonus_rolls': 0, 'conditions': [{'condition': 'minecraft:survives_explosion'}],
+    'pools': [{'rolls': 1, 'bonus_rolls': 0, 'condition': {'type': 'minecraft:survives_explosion'},
                'entries': [{'type': 'minecraft:item', 'name': 'minecraft:cauldron'}]}]})
 write('data/minecraft/tags/block/mineable/pickaxe.json', {'values': [f'{NS}:sacrificial_altar', f'{NS}:soul_tank', f'{NS}:head_atlas']})
 
@@ -109,7 +109,7 @@ write('data/minecraft/tags/block/mineable/pickaxe.json', {'values': [f'{NS}:sacr
 
 
 def unlock(recipe, items):
-    criteria = {'has_the_recipe': {'trigger': 'minecraft:recipe_unlocked', 'conditions': {'recipe': f'{NS}:{recipe}'}}}
+    criteria = {'has_the_recipe': {'trigger': 'minecraft:recipe_unlocked', 'conditions': {'recipes': f'{NS}:{recipe}'}}}
     for item in items:
         criteria[f'has_{item.split(":")[1]}'] = {'trigger': 'minecraft:inventory_changed',
                                                  'conditions': {'items': [{'items': item}]}}

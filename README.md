@@ -2,7 +2,7 @@
 
 <img src="src/main/resources/assets/skullsanctum/icon.png" alt="Skull Sanctum logo: a wither skeleton skull with glowing green eyes on an open amethyst book" width="128" align="right">
 
-A head shop paid in souls, for Minecraft 26.2 (Fabric). Build a small sanctum around a **Sacrificial Altar**: a cauldron
+A head shop paid in souls, for Minecraft 26.3 (Fabric). Build a small sanctum around a **Sacrificial Altar**: a cauldron
 and an enchanting table close to it are enough, the altar suggests a shrine of blackstone around them. Sacrifice blocks
 and items at the altar and their **souls** fill the **Soul Tank**, the sanctum's cauldron. Then right-click the
 **Head Atlas**, the sanctum's enchanting table, and buy heads with those souls: the classic MHF heads, any player's head,
@@ -14,7 +14,7 @@ creative tab, *Skull Sanctum*.
 ## Download
 
 Get `skullsanctum-<version>.jar` from [CurseForge](https://www.curseforge.com/minecraft/mc-mods/skull-sanctum) or the
-[GitHub releases](../../releases) and put it into `mods/` on the client and the server, next to Fabric API. Requires Minecraft 26.2, Fabric Loader 0.19.3+ and Java 25.
+[GitHub releases](../../releases) and put it into `mods/` on the client and the server, next to Fabric API. Requires Minecraft 26.3, Fabric Loader 0.19.5+ and Java 25.
 
 ## The guide book
 

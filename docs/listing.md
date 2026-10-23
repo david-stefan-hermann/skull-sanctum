@@ -1,18 +1,18 @@
 # Skull Sanctum
 
-A head shop paid in souls, for Minecraft 26.2 (Fabric). Build a small sanctum around a **Sacrificial Altar**: a cauldron
+A head shop paid in souls, for Minecraft 26.3 (Fabric). Build a small sanctum around a **Sacrificial Altar**: a cauldron
 and an enchanting table close to it are enough, the altar suggests a shrine of blackstone around them. Sacrifice blocks
 and items at the altar and their **souls** fill the **Soul Tank**, the sanctum's cauldron. Then right-click the
 **Head Atlas**, the sanctum's enchanting table, and buy heads with those souls: the classic MHF heads, any player's head,
 and over 86,000 from the Heads Database, sorted into categories and searchable by name and tag. Everything is in its own
 creative tab, *Skull Sanctum*.
 
-![A formed sanctum: the altar, the bubbling soul tank and the Head Atlas in their blackstone shrine](https://raw.githubusercontent.com/david-stefan-hermann/skull-sanctum/26.2/docs/sanctum.png)
+![A formed sanctum: the altar, the bubbling soul tank and the Head Atlas in their blackstone shrine](https://raw.githubusercontent.com/david-stefan-hermann/skull-sanctum/26.3/docs/sanctum.png)
 
 ## Download
 
 Get `skullsanctum-<version>.jar` from [CurseForge](https://www.curseforge.com/minecraft/mc-mods/skull-sanctum) or the
-[GitHub releases](https://github.com/david-stefan-hermann/skull-sanctum/releases) and put it into `mods/` on the client and the server, next to Fabric API. Requires Minecraft 26.2, Fabric Loader 0.19.3+ and Java 25.
+[GitHub releases](https://github.com/david-stefan-hermann/skull-sanctum/releases) and put it into `mods/` on the client and the server, next to Fabric API. Requires Minecraft 26.3, Fabric Loader 0.19.5+ and Java 25.
 
 ## The guide book
 
@@ -22,7 +22,7 @@ Right-click opens it, E or Escape closes it; the blocks' tabs are on the left, t
 
 This page follows the book chapter by chapter and adds the details that do not fit on its pages.
 
-![The guide book open on the Sacrificial Altar chapter](https://raw.githubusercontent.com/david-stefan-hermann/skull-sanctum/26.2/docs/book.png)
+![The guide book open on the Sacrificial Altar chapter](https://raw.githubusercontent.com/david-stefan-hermann/skull-sanctum/26.3/docs/book.png)
 
 ## Getting Started
 
@@ -224,4 +224,4 @@ Source and issues: https://github.com/david-stefan-hermann/skull-sanctum
 
 ## License
 
-MIT, see [LICENSE](https://github.com/david-stefan-hermann/skull-sanctum/blob/26.2/LICENSE). By BaconCakeFactory.
+MIT, see [LICENSE](https://github.com/david-stefan-hermann/skull-sanctum/blob/26.3/LICENSE). By BaconCakeFactory.
