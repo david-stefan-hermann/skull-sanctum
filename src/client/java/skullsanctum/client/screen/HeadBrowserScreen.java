@@ -83,6 +83,9 @@ public class HeadBrowserScreen extends Screen {
     private Component message;
     private int messageColor;
     private int messageTicks;
+    /** A stack was asked for, so its purchase rings longer; chimes still to ring, ticks to the next. */
+    private boolean stackAsked;
+    private int chimes, chimeTimer;
     private int left, top;
     private EditBox search;
     /** Bubbles in the vial. */
@@ -212,8 +215,23 @@ public class HeadBrowserScreen extends Screen {
         message = Component.translatable(result.message(), result.argument());
         messageColor = result.bought() ? SanctumUi.SOUL : SanctumUi.WARN;
         messageTicks = 60;
-        // the purchase rings for the buyer alone, over the souls the sanctum lets go (ShopNetwork.buy)
-        if (result.bought()) minecraft.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.EXPERIENCE_ORB_PICKUP, 0.9f, 0.6f));
+        // the purchase rings for the buyer alone, over the souls the sanctum lets go (ShopNetwork.buy); a stack
+        // rings a rising run of chimes (tick) and ends in the level-up fanfare
+        if (result.bought()) {
+            if (stackAsked) {
+                chimes = STACK_CHIMES;
+                chimeTimer = 0;
+            } else {
+                chime(0.9f);
+            }
+        }
+        stackAsked = false;
+    }
+
+    private static final int STACK_CHIMES = 6;
+
+    private void chime(float pitch) {
+        minecraft.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.EXPERIENCE_ORB_PICKUP, pitch, 0.6f));
     }
 
     /** The sanctum is out of reach or asleep: the browser closes with a word on the HUD. */
@@ -239,6 +257,7 @@ public class HeadBrowserScreen extends Screen {
     }
 
     private void buy(ShopNetwork.Entry entry, boolean stack) {
+        stackAsked = stack;
         if (entry.index() == ShopNetwork.PLAYER_ENTRY) {
             ClientPlayNetworking.send(new ShopNetwork.BuyPlayer(open.anchor(), entry.name(), stack ? 64 : 1));
         } else {
@@ -282,6 +301,11 @@ public class HeadBrowserScreen extends Screen {
         }
         if (slideTimer > 0 && --slideTimer == 0) query();
         if (messageTicks > 0) messageTicks--;
+        if (chimes > 0 && --chimeTimer <= 0) {
+            chime(0.8f + (STACK_CHIMES - chimes) * 0.12f);
+            if (--chimes == 0) minecraft.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.PLAYER_LEVELUP, 1.2f, 0.35f));
+            chimeTimer = 2;
+        }
         bubbles.tick(fillHeight());
     }
 
