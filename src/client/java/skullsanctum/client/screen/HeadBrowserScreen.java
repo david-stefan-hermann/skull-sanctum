@@ -391,17 +391,17 @@ public class HeadBrowserScreen extends Screen {
     @Override
     public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
         int tab = tabAt(event.x(), event.y());
-        if (tab >= 0 && event.button() == 0) {
+        if (tab >= 0 && event.button() == InputConstants.MOUSE_BUTTON_LEFT) {
             select(tabMode(tab));
             return true;
         }
         int cell = cellAt(event.x(), event.y());
         if (cell >= 0) {
-            if (event.button() == 1) toggleFavourite(cell);
-            else if (event.button() == 0) picked = entries.get(cell);
+            if (event.button() == InputConstants.MOUSE_BUTTON_RIGHT) toggleFavourite(cell);
+            else if (event.button() == InputConstants.MOUSE_BUTTON_LEFT) picked = entries.get(cell);
             return true;
         }
-        if (event.button() == 0) {
+        if (event.button() == InputConstants.MOUSE_BUTTON_LEFT) {
             if (overBuy(event.x(), event.y())) {
                 if (picked != null) buy(picked, shiftHeld());
                 return true;
@@ -620,6 +620,16 @@ public class HeadBrowserScreen extends Screen {
 
     public void devFavourite(int cell) {
         if (cell >= 0 && cell < entries.size()) toggleFavourite(cell);
+    }
+
+    /** The middle of cell {@code cell} in GUI pixels, for a dev click; then whether it is picked and a favourite. */
+    public double[] devCellCentre(int cell) {
+        return new double[]{left + GRID_X + cell % COLS * CELL_W + CELL_W / 2.0, top + GRID_Y + cell / COLS * CELL_H + CELL_H / 2.0};
+    }
+
+    public String devCellState(int cell) {
+        if (cell < 0 || cell >= entries.size()) return "no cell " + cell;
+        return entries.get(cell).name() + (entries.get(cell) == picked ? " picked" : "") + (entries.get(cell).favourite() ? " favourite" : "");
     }
 
     public int devShown() {

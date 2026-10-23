@@ -1,5 +1,6 @@
 package skullsanctum.client.screen;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.input.MouseButtonEvent;
@@ -55,6 +56,11 @@ public class AltarScreen extends AbstractContainerScreen<AltarMenu> {
         sacrifice();
     }
 
+    /** The middle of the seal in GUI pixels, for a dev click. */
+    public double[] devSealCentre() {
+        return new double[]{leftPos + SEAL_X + SEAL_D / 2.0, topPos + SEAL_Y + SEAL_D / 2.0};
+    }
+
     private boolean hasOffering() {
         for (Slot slot : menu.slots) {
             if (menu.isOffering(slot) && slot.hasItem()) return true;
@@ -78,7 +84,7 @@ public class AltarScreen extends AbstractContainerScreen<AltarMenu> {
 
     @Override
     public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
-        if (event.button() == 0 && overSeal(event.x(), event.y())) {
+        if (event.button() == InputConstants.MOUSE_BUTTON_LEFT && overSeal(event.x(), event.y())) {
             sacrifice();
             return true;
         }

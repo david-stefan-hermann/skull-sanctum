@@ -1,9 +1,12 @@
 package skullsanctum.client;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Screenshot;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.input.MouseButtonInfo;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
@@ -135,6 +138,7 @@ public final class DevClientHooks {
                 int key = com.mojang.blaze3d.platform.InputConstants.getKey("key.keyboard." + Character.toLowerCase(args[0].charAt(0))).getValue();
                 if (minecraft.gui.screen() != null) minecraft.gui.screen().keyPressed(new net.minecraft.client.input.KeyEvent(key, key, 0));
             }
+            case "click" -> click(minecraft, args); // click seal|cell+N left|right: a real click through mouseClicked
             case "mouse" -> moveMouse(minecraft, Double.parseDouble(args[0]), Double.parseDouble(args[1]));
             case "shot" -> grab(minecraft, action.argument() + ".png");
             default -> LOGGER.warn("Dev: unknown action {}", action.command());
@@ -144,6 +148,23 @@ public final class DevClientHooks {
     private static void browser(Minecraft minecraft, java.util.function.Consumer<HeadBrowserScreen> action) {
         if (minecraft.gui.screen() instanceof HeadBrowserScreen browser) action.accept(browser);
         else LOGGER.warn("Dev: no head browser open");
+    }
+
+    private static void click(Minecraft minecraft, String[] args) {
+        var screen = minecraft.gui.screen();
+        double[] at;
+        if (args[0].equals("seal") && screen instanceof AltarScreen altar) at = altar.devSealCentre();
+        else if (args[0].equals("cell") && screen instanceof HeadBrowserScreen browser) at = browser.devCellCentre(Integer.parseInt(args[1]));
+        else {
+            LOGGER.warn("Dev: nothing to click for {}", String.join(" ", args));
+            return;
+        }
+        int button = args[args.length - 1].equals("right") ? InputConstants.MOUSE_BUTTON_RIGHT : InputConstants.MOUSE_BUTTON_LEFT;
+        var event = new MouseButtonEvent(at[0], at[1], new MouseButtonInfo(button, 0));
+        boolean handled = screen.mouseClicked(event, false);
+        screen.mouseReleased(event);
+        LOGGER.info("Dev: {} click on {} at {}, {} -> {}{}", args[args.length - 1], args[0], at[0], at[1], handled,
+                screen instanceof HeadBrowserScreen browser ? " (" + browser.devCellState(Integer.parseInt(args[1])) + ")" : "");
     }
 
     /** Puts the mouse on GUI pixel x, y (the window's pixels are the GUI's times its scale). */
