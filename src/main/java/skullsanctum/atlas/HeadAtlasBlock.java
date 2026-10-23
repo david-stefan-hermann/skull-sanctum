@@ -73,7 +73,7 @@ public class HeadAtlasBlock extends BaseEntityBlock {
             level.setBlockAndUpdate(pos, Blocks.ENCHANTING_TABLE.defaultBlockState());
             if (player instanceof ServerPlayer serverPlayer) serverPlayer.sendOverlayMessage(Component.translatable("message.skullsanctum.orphan"));
         } else if (player instanceof ServerPlayer serverPlayer) {
-            ShopNetwork.openBrowser(serverPlayer, altar);
+            ShopNetwork.openBrowser(serverPlayer, pos, altar, false);
         }
         return InteractionResult.SUCCESS_SERVER;
     }

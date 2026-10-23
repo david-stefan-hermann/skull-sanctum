@@ -220,14 +220,14 @@ public class AltarScreen extends AbstractContainerScreen<AltarMenu> {
 
     /** A skull seven pixels square. */
     private static void miniSkull(GuiGraphicsExtractor g, int x, int y) {
-        g.fill(x + 1, y, x + 6, y + 1, SanctumUi.BONE);
-        g.fill(x, y + 1, x + 7, y + 4, SanctumUi.BONE);
-        g.fill(x + 1, y + 4, x + 6, y + 6, SanctumUi.BONE);
-        g.fill(x + 2, y + 6, x + 3, y + 7, SanctumUi.BONE_DARK);
-        g.fill(x + 4, y + 6, x + 5, y + 7, SanctumUi.BONE_DARK);
-        g.fill(x + 1, y + 2, x + 3, y + 4, SanctumUi.SOUL);
-        g.fill(x + 4, y + 2, x + 6, y + 4, SanctumUi.SOUL);
-        g.fill(x + 3, y + 4, x + 4, y + 5, SanctumUi.INK);
+        g.fill(x + 1, y, x + 6, y + 1, SanctumUi.SKULL_BONE);
+        g.fill(x, y + 1, x + 7, y + 4, SanctumUi.SKULL_BONE);
+        g.fill(x + 1, y + 4, x + 6, y + 6, SanctumUi.SKULL_BONE);
+        g.fill(x + 2, y + 6, x + 3, y + 7, SanctumUi.SKULL_SHADOW);
+        g.fill(x + 4, y + 6, x + 5, y + 7, SanctumUi.SKULL_SHADOW);
+        g.fill(x + 1, y + 2, x + 3, y + 4, SanctumUi.SKULL_EYE);
+        g.fill(x + 4, y + 2, x + 6, y + 4, SanctumUi.SKULL_EYE);
+        g.fill(x + 3, y + 4, x + 4, y + 5, SanctumUi.SKULL_INK);
     }
 
     /** Whether pixel x, y lies on a bone {@code w} by {@code h}: a shaft, thicker towards its ends, and two knuckles at each end. */

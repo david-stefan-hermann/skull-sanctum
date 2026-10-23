@@ -3,11 +3,17 @@ package skullsanctum.altar;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.GlobalPos;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseEntityBlock;
@@ -32,7 +38,7 @@ import skullsanctum.SkullSanctum;
 /**
  * The sacrificial altar. Before the sanctum stands, a right click checks it and shows the blocks that are missing as
  * ghosts; once it is complete the same click forms it. A formed altar opens its sacrifice screen and burns what is
- * thrown onto it.
+ * thrown onto it; a click on it with a portable Head Atlas in hand binds that skull to the sanctum instead.
  */
 public class SacrificialAltarBlock extends BaseEntityBlock {
     public static final MapCodec<SacrificialAltarBlock> CODEC = simpleCodec(SacrificialAltarBlock::new);
@@ -93,6 +99,19 @@ public class SacrificialAltarBlock extends BaseEntityBlock {
         if (level.getBlockEntity(pos) instanceof SacrificialAltarBlockEntity altar && player instanceof ServerPlayer serverPlayer) {
             altar.use(serverPlayer);
         }
+        return InteractionResult.SUCCESS_SERVER;
+    }
+
+    /** A portable Head Atlas in hand is bound to an awake altar: from then on it opens this sanctum's heads anywhere. */
+    @Override
+    protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player,
+                                          InteractionHand hand, BlockHitResult hit) {
+        if (!stack.is(SkullSanctum.PORTABLE_ATLAS_ITEM) || !state.getValue(FORMED)) return InteractionResult.TRY_WITH_EMPTY_HAND;
+        if (level.isClientSide()) return InteractionResult.SUCCESS;
+        stack.set(SkullSanctum.BOUND_ALTAR, GlobalPos.of(level.dimension(), pos));
+        level.playSound(null, pos, SoundEvents.SOUL_ESCAPE.value(), SoundSource.BLOCKS, 1.0f, 0.8f);
+        ((ServerLevel) level).sendParticles(SkullSanctum.SOUL_FLAME, pos.getX() + 0.5, pos.getY() + 0.85, pos.getZ() + 0.5, 12, 0.25, 0.1, 0.25, 0.02);
+        if (player instanceof ServerPlayer serverPlayer) serverPlayer.sendOverlayMessage(Component.translatable("message.skullsanctum.portable.bound"));
         return InteractionResult.SUCCESS_SERVER;
     }
 

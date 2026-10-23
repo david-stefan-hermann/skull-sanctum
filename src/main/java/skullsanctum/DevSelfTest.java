@@ -8,16 +8,19 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.GlobalPos;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.LayeredCauldronBlock;
 import net.minecraft.world.level.block.entity.HopperBlockEntity;
@@ -32,6 +35,7 @@ import skullsanctum.altar.SacrificialAltarBlock;
 import skullsanctum.altar.SacrificialAltarBlockEntity;
 import skullsanctum.altar.Sanctum;
 import skullsanctum.altar.SanctumPattern;
+import skullsanctum.portable.PortableAtlasBlockEntity;
 import skullsanctum.shop.Favourites;
 import skullsanctum.shop.HeadCatalog;
 import skullsanctum.shop.HeadStacks;
@@ -53,8 +57,9 @@ import java.util.UUID;
 /**
  * Dev-only check, active with {@code -Dskullsanctum.selftest} ({@code ./gradlew runServer -PselfTest}): builds
  * sanctums on platforms high above spawn in every orientation, forms and breaks them, sacrifices by screen and by
- * throwing, takes souls out of the tank and checks that hoppers cannot, buys heads from a test catalog, checks the
- * recipes and the book's keys, writes run/skullsanctum-selftest/summary.txt and stops the server.
+ * throwing, takes souls out of the tank and checks that hoppers cannot, buys heads from a test catalog, binds a
+ * portable Head Atlas and uses it from the Nether, checks the recipes and the book's keys, writes
+ * run/skullsanctum-selftest/summary.txt and stops the server.
  */
 final class DevSelfTest {
     private static final String PROPERTY = "skullsanctum.selftest";
@@ -125,6 +130,7 @@ final class DevSelfTest {
         thrown(altar);
         tank(altar);
         shop(server, altar);
+        portable(server, altar);
         breaking();
         recipes(server);
         heads();
@@ -364,6 +370,57 @@ final class DevSelfTest {
         HeadCatalog.start(server); // the real catalog again
     }
 
+    private void portable(MinecraftServer server, SacrificialAltarBlockEntity altar) {
+        BlockPos altarPos = altar.getBlockPos();
+        ItemStack skull = new ItemStack(SkullSanctum.PORTABLE_ATLAS_ITEM);
+        alice.setItemInHand(InteractionHand.MAIN_HAND, skull);
+        BlockHitResult hit = new BlockHitResult(Vec3.atCenterOf(altarPos), Direction.UP, altarPos, false);
+        level.getBlockState(altarPos).useItemOn(skull, level, alice, InteractionHand.MAIN_HAND, hit);
+        GlobalPos bound = skull.get(SkullSanctum.BOUND_ALTAR);
+        check("a right click on the awake altar binds the skull to it", GlobalPos.of(level.dimension(), altarPos).equals(bound), String.valueOf(bound));
+
+        ServerLevel nether = server.getLevel(Level.NETHER);
+        BlockPos far = new BlockPos(1000, 100, 1000);
+        nether.setBlockAndUpdate(far, SkullSanctum.PORTABLE_ATLAS.defaultBlockState());
+        PortableAtlasBlockEntity inNether = (PortableAtlasBlockEntity) nether.getBlockEntity(far);
+        inNether.applyComponentsFromItemStack(skull);
+        check("set down in the Nether, it finds its altar in the overworld", inNether.altar(server) == altar, String.valueOf(inNether.boundAltar()));
+
+        BlockPos near = platform();
+        level.setBlockAndUpdate(near, SkullSanctum.PORTABLE_ATLAS.defaultBlockState());
+        PortableAtlasBlockEntity placed = (PortableAtlasBlockEntity) level.getBlockEntity(near);
+        placed.applyComponentsFromItemStack(skull);
+        alice.setPos(near.getX() + 0.5, near.getY() + 1, near.getZ() + 0.5);
+        check("the browser's requests from the skull reach the sanctum", ShopNetwork.altarInReach(alice, near) == altar, "");
+        alice.setPos(near.getX() + 12.5, near.getY() + 1, near.getZ() + 0.5);
+        check("not from 12 blocks away", ShopNetwork.altarInReach(alice, near) == null, "");
+        alice.setPos(near.getX() + 0.5, near.getY() + 1, near.getZ() + 0.5);
+        level.destroyBlock(near, true, alice);
+        ItemStack dropped = ItemStack.EMPTY;
+        for (ItemEntity item : level.getEntitiesOfClass(ItemEntity.class, new AABB(near).inflate(2))) {
+            if (item.getItem().is(SkullSanctum.PORTABLE_ATLAS_ITEM)) dropped = item.getItem();
+        }
+        check("breaking the skull drops it still bound", !dropped.isEmpty() && GlobalPos.of(level.dimension(), altarPos).equals(dropped.get(SkullSanctum.BOUND_ALTAR)),
+                dropped.toString());
+
+        BlockPos loose = platform();
+        level.setBlockAndUpdate(loose, SkullSanctum.PORTABLE_ATLAS.defaultBlockState());
+        alice.setPos(loose.getX() + 0.5, loose.getY() + 1, loose.getZ() + 0.5);
+        check("an unbound skull opens nothing", ShopNetwork.altarInReach(alice, loose) == null, "");
+
+        SacrificialAltarBlockEntity other = formedSanctum(Direction.NORTH);
+        ItemStack second = new ItemStack(SkullSanctum.PORTABLE_ATLAS_ITEM);
+        second.set(SkullSanctum.BOUND_ALTAR, GlobalPos.of(level.dimension(), other.getBlockPos()));
+        BlockPos asleep = platform();
+        level.setBlockAndUpdate(asleep, SkullSanctum.PORTABLE_ATLAS.defaultBlockState());
+        ((PortableAtlasBlockEntity) level.getBlockEntity(asleep)).applyComponentsFromItemStack(second);
+        alice.setPos(asleep.getX() + 0.5, asleep.getY() + 1, asleep.getZ() + 0.5);
+        check("a skull of another sanctum reaches that one", ShopNetwork.altarInReach(alice, asleep) == other, "");
+        other.unform(level);
+        check("once that sanctum sleeps the skull opens nothing", ShopNetwork.altarInReach(alice, asleep) == null, "");
+        alice.setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY);
+    }
+
     private void breaking() {
         SacrificialAltarBlockEntity altar = formedSanctum(Direction.EAST);
         BlockPos tankPos = altar.tankPos(), tablePos = altar.tablePos();
@@ -401,6 +458,11 @@ final class DevSelfTest {
         ItemStack guide = server.getRecipeManager().getRecipeFor(RecipeType.CRAFTING, book, level)
                 .map(h -> h.value().assemble(book)).orElse(ItemStack.EMPTY);
         check("a wither skeleton skull and a book give the guide", guide.is(SkullSanctum.GUIDE_BOOK), guide.toString());
+        ItemStack soul = new ItemStack(SkullSanctum.SOUL), pearl = new ItemStack(Items.ENDER_PEARL), bone = new ItemStack(Items.SKELETON_SKULL);
+        CraftingInput portable = CraftingInput.of(3, 3, List.of(soul, pearl, soul, pearl, bone, pearl, soul, pearl, soul));
+        ItemStack skull = server.getRecipeManager().getRecipeFor(RecipeType.CRAFTING, portable, level)
+                .map(h -> h.value().assemble(portable)).orElse(ItemStack.EMPTY);
+        check("a skeleton skull, ender pearls and souls give the portable Head Atlas", skull.is(SkullSanctum.PORTABLE_ATLAS_ITEM), skull.toString());
     }
 
     private void heads() {

@@ -1,0 +1,43 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "skullsanctum:portable_atlas"
+      }
+    },
+    "has_soul": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "skullsanctum:soul"
+          }
+        ]
+      }
+    },
+    "has_skeleton_skull": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "minecraft:skeleton_skull"
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_soul",
+      "has_skeleton_skull"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "skullsanctum:portable_atlas"
+    ]
+  }
+}

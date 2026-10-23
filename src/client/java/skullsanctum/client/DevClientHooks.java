@@ -27,7 +27,7 @@ import java.util.List;
  * after the last one; a command and its argument are split by '=' or a space, '+' stands for a space. Commands:
  * {@code use x,y,z[,face]} (right-click a block), {@code quick N} (shift-click slot N of
  * the open screen), {@code sacrifice}, {@code tab N}, {@code search text}, {@code buy N [stack]}, {@code pick N}, {@code fav N},
- * {@code close}, {@code key letter} (a key press to the open screen), {@code mouse x,y} (GUI pixels) and
+ * {@code close}, {@code inventory} (opens the player's inventory), {@code key letter} (a key press to the open screen), {@code mouse x,y} (GUI pixels) and
  * {@code shot name} (screenshots/name.png).
  */
 public final class DevClientHooks {
@@ -128,6 +128,7 @@ public final class DevClientHooks {
             case "pick" -> browser(minecraft, b -> b.devPick(Integer.parseInt(args[0])));
             case "fav" -> browser(minecraft, b -> b.devFavourite(Integer.parseInt(args[0])));
             case "close" -> minecraft.player.closeContainer();
+            case "inventory" -> minecraft.gui.setScreen(new net.minecraft.client.gui.screens.inventory.InventoryScreen(minecraft.player));
             case "cmd" -> minecraft.player.connection.sendCommand(action.argument().replace('+', ' ')); // cmd data+merge+...
             case "key" -> { // a key press as the keyboard sends it: key=e
                 int key = org.lwjgl.glfw.GLFW.GLFW_KEY_A + Character.toUpperCase(args[0].charAt(0)) - 'A';

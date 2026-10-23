@@ -9,7 +9,9 @@ import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityT
 import net.fabricmc.fabric.api.particle.v1.FabricParticleTypes;
 import net.fabricmc.fabric.api.resource.v1.ResourceLoader;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.GlobalPos;
 import net.minecraft.core.Registry;
+import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
@@ -26,6 +28,7 @@ import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.material.PushReaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import skullsanctum.altar.AltarMenu;
@@ -35,6 +38,9 @@ import skullsanctum.altar.SacrificialAltarBlockEntity;
 import skullsanctum.altar.Sanctum;
 import skullsanctum.atlas.HeadAtlasBlock;
 import skullsanctum.atlas.HeadAtlasBlockEntity;
+import skullsanctum.portable.PortableAtlasBlock;
+import skullsanctum.portable.PortableAtlasBlockEntity;
+import skullsanctum.portable.PortableAtlasItem;
 import skullsanctum.shop.HeadCatalog;
 import skullsanctum.shop.ShopNetwork;
 import skullsanctum.tank.SoulTankBlock;
@@ -53,13 +59,17 @@ public final class SkullSanctum implements ModInitializer {
             .requiresCorrectToolForDrops().lightLevel(state -> state.getValue(SacrificialAltarBlock.FORMED) ? 7 : 0)));
     /** What the sanctum's cauldron turns into: holds the souls. Never crafted, breaking it gives the cauldron back. */
     public static final Block SOUL_TANK = block("soul_tank", props -> new SoulTankBlock(props
-            .mapColor(MapColor.STONE).strength(2.0f).sound(SoundType.METAL).requiresCorrectToolForDrops().noOcclusion()
-            .lightLevel(state -> state.getValue(SoulTankBlock.BURNING) ? 15 : 0))); // the souls glow themselves (model), the tank does not
+            .mapColor(MapColor.STONE).strength(2.0f).sound(SoundType.METAL).requiresCorrectToolForDrops().noOcclusion()));
+            // no light of its own, burning or not: the souls and the flame glow in their models without lighting up the tank
 
     /** What the sanctum's enchanting table turns into: opens the head browser. Breaking it gives the table back. */
     public static final Block HEAD_ATLAS = block("head_atlas", props -> new HeadAtlasBlock(props
             .mapColor(MapColor.COLOR_BLACK).strength(5.0f, 1200.0f).requiresCorrectToolForDrops()
             .lightLevel(state -> 7)));
+    /** A skull bound to an awake altar by a right click on it; set down anywhere, it is that sanctum's Head Atlas. */
+    public static final Block PORTABLE_ATLAS = block("portable_atlas", props -> new PortableAtlasBlock(props
+            .mapColor(MapColor.COLOR_BLACK).strength(0.4f).sound(PortableAtlasBlock.SOUND).noOcclusion() // quick to pick up by hand
+            .pushReaction(PushReaction.DESTROY).lightLevel(state -> 7)));
 
     public static final BlockEntityType<SacrificialAltarBlockEntity> ALTAR_BLOCK_ENTITY = Registry.register(
             BuiltInRegistries.BLOCK_ENTITY_TYPE, id("sacrificial_altar"),
@@ -70,6 +80,14 @@ public final class SkullSanctum implements ModInitializer {
     public static final BlockEntityType<SoulTankBlockEntity> TANK_BLOCK_ENTITY = Registry.register(
             BuiltInRegistries.BLOCK_ENTITY_TYPE, id("soul_tank"),
             FabricBlockEntityTypeBuilder.create(SoulTankBlockEntity::new, SOUL_TANK).build());
+    public static final BlockEntityType<PortableAtlasBlockEntity> PORTABLE_BLOCK_ENTITY = Registry.register(
+            BuiltInRegistries.BLOCK_ENTITY_TYPE, id("portable_atlas"),
+            FabricBlockEntityTypeBuilder.create(PortableAtlasBlockEntity::new, PORTABLE_ATLAS).build());
+
+    /** Where the altar a portable Head Atlas is bound to stands: its dimension and position. */
+    public static final DataComponentType<GlobalPos> BOUND_ALTAR = Registry.register(BuiltInRegistries.DATA_COMPONENT_TYPE,
+            id("bound_altar"), DataComponentType.<GlobalPos>builder().persistent(GlobalPos.CODEC)
+                    .networkSynchronized(GlobalPos.STREAM_CODEC).build());
 
     /** Everything the mod adds in one book. */
     public static final Item GUIDE_BOOK = item("guide_book", props -> new GuideBookItem(props.stacksTo(1), GuideBook.BOOK));
@@ -77,6 +95,8 @@ public final class SkullSanctum implements ModInitializer {
             props -> new BlockItem(SACRIFICIAL_ALTAR, props.useBlockDescriptionPrefix()));
     /** The currency: what the altar makes of sacrifices, what heads cost. */
     public static final Item SOUL = item("soul", props -> new Item(props.rarity(Rarity.UNCOMMON)));
+    public static final Item PORTABLE_ATLAS_ITEM = item("portable_atlas",
+            props -> new PortableAtlasItem(PORTABLE_ATLAS, props.useBlockDescriptionPrefix().rarity(Rarity.RARE)));
 
     public static final ExtendedMenuType<AltarMenu, BlockPos> ALTAR_MENU = Registry.register(BuiltInRegistries.MENU,
             id("sacrificial_altar"), new ExtendedMenuType<>(AltarMenu::client, BlockPos.STREAM_CODEC));
@@ -104,6 +124,7 @@ public final class SkullSanctum implements ModInitializer {
                     out.accept(GUIDE_BOOK);
                     out.accept(SACRIFICIAL_ALTAR_ITEM);
                     out.accept(SOUL);
+                    out.accept(PORTABLE_ATLAS_ITEM);
                 })
                 .build());
         ResourceLoader.get(PackType.SERVER_DATA).registerReloadListener(id("sacrifice_values"), new SacrificeValues.Loader());

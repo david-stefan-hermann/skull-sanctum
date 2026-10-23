@@ -87,7 +87,7 @@ public class HeadBrowserScreen extends Screen {
     private final SoulBubbles bubbles = new SoulBubbles(28);
 
     public HeadBrowserScreen(ShopNetwork.Open open) {
-        super(Component.translatable("gui.skullsanctum.browser"));
+        super(Component.translatable(open.portable() ? "gui.skullsanctum.browser.portable" : "gui.skullsanctum.browser"));
         this.open = open;
         this.balance = open.balance();
         this.tankSouls = open.tankSouls();
@@ -152,7 +152,7 @@ public class HeadBrowserScreen extends Screen {
     }
 
     private void ask(PageKey key) {
-        if (asked.add(key)) ClientPlayNetworking.send(new ShopNetwork.Query(open.altar(), key.mode(), key.search(), key.page()));
+        if (asked.add(key)) ClientPlayNetworking.send(new ShopNetwork.Query(open.anchor(), key.mode(), key.search(), key.page()));
     }
 
     public void accept(ShopNetwork.Page received) {
@@ -236,9 +236,9 @@ public class HeadBrowserScreen extends Screen {
 
     private void buy(ShopNetwork.Entry entry, boolean stack) {
         if (entry.index() == ShopNetwork.PLAYER_ENTRY) {
-            ClientPlayNetworking.send(new ShopNetwork.BuyPlayer(open.altar(), entry.name(), stack ? 64 : 1));
+            ClientPlayNetworking.send(new ShopNetwork.BuyPlayer(open.anchor(), entry.name(), stack ? 64 : 1));
         } else {
-            ClientPlayNetworking.send(new ShopNetwork.Buy(open.altar(), entry.index(), entry.uuid(), stack ? 64 : 1));
+            ClientPlayNetworking.send(new ShopNetwork.Buy(open.anchor(), entry.index(), entry.uuid(), stack ? 64 : 1));
         }
     }
 
@@ -264,7 +264,7 @@ public class HeadBrowserScreen extends Screen {
     @Override
     public void tick() {
         super.tick();
-        if (minecraft.player != null && minecraft.player.distanceToSqr(Vec3.atCenterOf(open.altar())) > ShopNetwork.REACH * ShopNetwork.REACH) {
+        if (minecraft.player != null && minecraft.player.distanceToSqr(Vec3.atCenterOf(open.anchor())) > ShopNetwork.REACH * ShopNetwork.REACH) {
             gone();
             return;
         }

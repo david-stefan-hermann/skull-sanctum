@@ -10,6 +10,7 @@ import net.minecraft.client.particle.FlameParticle;
 import skullsanctum.Config;
 import skullsanctum.SkullSanctum;
 import skullsanctum.client.render.HeadAtlasRenderer;
+import skullsanctum.client.render.PortableAtlasRenderer;
 import skullsanctum.client.screen.AltarScreen;
 import skullsanctum.client.screen.HeadBrowserScreen;
 import skullsanctum.client.screen.TankScreen;
@@ -21,6 +22,7 @@ public final class SkullSanctumClient implements ClientModInitializer {
         MenuScreens.register(SkullSanctum.ALTAR_MENU, AltarScreen::new);
         MenuScreens.register(SkullSanctum.TANK_MENU, TankScreen::new);
         BlockEntityRendererRegistry.register(SkullSanctum.ATLAS_BLOCK_ENTITY, HeadAtlasRenderer::new);
+        BlockEntityRendererRegistry.register(SkullSanctum.PORTABLE_BLOCK_ENTITY, PortableAtlasRenderer::new);
         ParticleProviderRegistry.getInstance().register(SkullSanctum.SOUL_FLAME, FlameParticle.Provider::new);
         ParticleProviderRegistry.getInstance().register(SkullSanctum.SOUL_BUBBLE, BubblePopParticle.Provider::new);
         ClientPlayNetworking.registerGlobalReceiver(ShopNetwork.Settings.TYPE,
