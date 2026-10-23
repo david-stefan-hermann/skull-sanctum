@@ -7,3 +7,4 @@ out/
 *.log
 build.out
 publish.out
+*.out

@@ -131,7 +131,7 @@ jar {
 publishMods {
     file = tasks.named('jar').flatMap { it.archiveFile }
     changelog = provider { topChangelogSection() }
-    type = STABLE
+    type = BETA
     displayName = "Skull Sanctum ${project.version}"
     version = project.version.toString()
     modLoaders.add("fabric")
